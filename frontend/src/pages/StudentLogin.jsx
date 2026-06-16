@@ -5,7 +5,7 @@ import API from "../api/axios";
 function StudentLogin() {
   const navigate = useNavigate();
 
-  const [email, setEmail] =
+  const [studentId, setStudentId] =
     useState("");
 
   const [password, setPassword] =
@@ -18,7 +18,7 @@ function StudentLogin() {
       const res = await API.post(
         "/student-auth/login",
         {
-          email,
+          student_id: studentId,
           password,
         }
       );
@@ -62,12 +62,12 @@ function StudentLogin() {
         </h1>
 
         <input
-          type="email"
-          placeholder="Email"
+          type="text"
+          placeholder="Student ID"
           className="w-full border p-3 rounded-lg mb-4"
-          value={email}
+          value={studentId}
           onChange={(e) =>
-            setEmail(
+            setStudentId(
               e.target.value
             )
           }

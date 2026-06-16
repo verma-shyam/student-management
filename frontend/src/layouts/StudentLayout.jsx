@@ -8,7 +8,7 @@ function StudentLayout({ children }) {
     localStorage.removeItem("studentToken");
     localStorage.removeItem("studentId");
 
-    navigate("/student-login");
+    navigate("/");
   };
 
   return (

@@ -9,9 +9,7 @@ function ProtectedStudentRoute({
     );
 
   if (!token) {
-    return (
-      <Navigate to="/student-login" />
-    );
+    return <Navigate to="/" />;
   }
 
   return children;

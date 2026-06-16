@@ -3,7 +3,6 @@ import Sidebar from "../components/Sidebar";
 
 function DashboardLayout({ children }) {
   const navigate = useNavigate();
-
   const handleLogout = () => {
     localStorage.removeItem("token");
 
@@ -19,11 +18,7 @@ function DashboardLayout({ children }) {
 
       {/* Main Content */}
       <div className="flex-1 bg-slate-100 min-h-screen">
-
-        {/* Page Content */}
-        <div>
-          {children}
-        </div>
+        <div>{children}</div>
       </div>
     </div>
   );

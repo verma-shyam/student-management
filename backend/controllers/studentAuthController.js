@@ -42,14 +42,24 @@ exports.registerStudent = async (req, res) => {
 // Login Student
 exports.loginStudent = async (req, res) => {
   try {
-    const { email, password } =
-      req.body;
+    const { student_id, email, password } = req.body;
 
-    const result =
-      await pool.query(
-        "SELECT * FROM student_auth WHERE email=$1",
-        [email]
-      );
+    console.log("STUDENT LOGIN BODY:", req.body);
+
+    if ((!email && !student_id) || !password) {
+      return res.status(400).json({
+        message:
+          "Student ID or email and password are required",
+      });
+    }
+
+    const queryField = student_id ? "student_id" : "email";
+    const queryValue = student_id || email;
+
+    const result = await pool.query(
+      `SELECT * FROM student_auth WHERE ${queryField}=$1`,
+      [queryValue]
+    );
 
     if (
       result.rows.length === 0

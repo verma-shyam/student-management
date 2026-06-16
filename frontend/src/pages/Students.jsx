@@ -14,7 +14,9 @@ function Students() {
     email: "",
     phone: "",
     department: "",
+    password: "",
   });
+  const [createdCredentials, setCreatedCredentials] = useState(null);
 
   const fetchStudents = async () => {
     try {
@@ -62,6 +64,7 @@ function Students() {
       email: student.email,
       phone: student.phone,
       department: student.department,
+      password: "",
     });
   };
 
@@ -94,8 +97,12 @@ function Students() {
 
         setStudents([
           ...students,
-          res.data,
+          res.data.student,
         ]);
+
+        setCreatedCredentials(
+          res.data.credentials
+        );
 
         alert("Student Added");
       }
@@ -105,6 +112,7 @@ function Students() {
         email: "",
         phone: "",
         department: "",
+        password: "",
       });
     } catch (error) {
       console.error(error);
@@ -203,6 +211,20 @@ function Students() {
                 })
               }
             />
+
+            <input
+              type="password"
+              placeholder="Password"
+              className="border p-3 rounded-lg"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  password: e.target.value,
+                })
+              }
+              required={!editingId}
+            />
           </div>
 
           <button
@@ -212,6 +234,22 @@ function Students() {
             Save Student
           </button>
         </form>
+
+        {createdCredentials && (
+          <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl mb-6">
+            <h3 className="text-xl font-semibold mb-2">
+              Newly Created Student Credentials
+            </h3>
+            <p>
+              <strong>Student ID:</strong>{" "}
+              {createdCredentials.student_id}
+            </p>
+            <p>
+              <strong>Password:</strong>{" "}
+              {createdCredentials.password}
+            </p>
+          </div>
+        )}
         
         <div className="mb-6">
           <input

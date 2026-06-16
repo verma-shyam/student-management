@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const bcrypt = require("bcryptjs");
 
 exports.getStudents = async (req, res) => {
   try {
@@ -18,9 +19,9 @@ exports.getStudents = async (req, res) => {
 
 exports.addStudent = async (req, res) => {
   try {
-    const { name, email, phone, department } = req.body;
+    const { name, email, phone, department, password } = req.body;
 
-    const result = await pool.query(
+    const studentResult = await pool.query(
       `INSERT INTO students
        (name,email,phone,department)
        VALUES($1,$2,$3,$4)
@@ -28,7 +29,25 @@ exports.addStudent = async (req, res) => {
       [name, email, phone, department]
     );
 
-    res.status(201).json(result.rows[0]);
+    const student = studentResult.rows[0];
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await pool.query(
+      `INSERT INTO student_auth
+       (student_id, email, password)
+       VALUES($1, $2, $3)`,
+      [student.id, email, hashedPassword]
+    );
+
+    res.status(201).json({
+      student,
+      credentials: {
+        student_id: student.id,
+        email,
+        password,
+      },
+    });
   } catch (err) {
     console.error(err);
 

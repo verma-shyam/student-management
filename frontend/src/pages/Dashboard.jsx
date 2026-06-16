@@ -12,10 +12,50 @@ function Dashboard() {
     results: 0,
     attendance: 0,
   });
+  const [students, setStudents] = useState([]);
+  const [reviewStudent, setReviewStudent] = useState("");
+  const [feedback, setFeedback] = useState("");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("studentId");
     navigate("/");
+  };
+
+  const fetchStats = async () => {
+    try {
+      const res = await API.get("/dashboard");
+      setStats(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchStudents = async () => {
+    try {
+      const res = await API.get("/students");
+      setStudents(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleReviewSave = async (e) => {
+    e.preventDefault();
+
+    try {
+      await API.post("/reviews", {
+        student_id: reviewStudent,
+        feedback,
+      });
+
+      setReviewStudent("");
+      setFeedback("");
+      alert("Feedback submitted successfully");
+    } catch (error) {
+      console.error(error);
+      alert("Could not submit feedback");
+    }
   };
 
   useEffect(() => {
@@ -26,16 +66,8 @@ function Dashboard() {
       return;
     }
 
-    const fetchStats = async () => {
-      try {
-        const res = await API.get("/dashboard");
-        setStats(res.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     fetchStats();
+    fetchStudents();
   }, [navigate]);
 
   return (
@@ -102,6 +134,50 @@ function Dashboard() {
               {stats.results}
             </p>
           </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <h3 className="text-xl font-bold mb-4">Provide Feedback</h3>
+          <form onSubmit={handleReviewSave} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700">
+                Student
+              </label>
+              <select
+                className="mt-2 w-full rounded-xl border border-slate-200 p-3"
+                value={reviewStudent}
+                onChange={(e) => setReviewStudent(e.target.value)}
+                required
+              >
+                <option value="">Choose a student</option>
+                {students.map((studentItem) => (
+                  <option key={studentItem.id} value={studentItem.id}>
+                    {studentItem.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700">
+                Feedback
+              </label>
+              <textarea
+                className="mt-2 w-full rounded-xl border border-slate-200 p-3"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                rows={5}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-5 py-2 rounded-xl hover:bg-green-700"
+            >
+              Submit Feedback
+            </button>
+          </form>
         </div>
 
         {/* Recent Activities */}

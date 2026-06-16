@@ -1,4 +1,7 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedStudentRoute from "./components/ProtectedStudentRoute";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -11,32 +14,13 @@ import ChangePassword from "./pages/ChangePassword";
 import StudentLogin from "./pages/StudentLogin";
 import StudentDashboard from "./pages/StudentDashboard";
 import MyAttendance from "./pages/MyAttendance";
-import MyAttendance from "./pages/MyAttendance";
 import MyResults from "./pages/MyResults";
 import MyProfile from "./pages/MyProfile";
 import StudentAnalytics from "./pages/StudentAnalytics";
 import EditProfile from "./pages/EditProfile";
-import { Navigate } from "react-router-dom";
 import StudentReport from "./pages/StudentReport";
+import StudentChangePassword from "./pages/StudentChangePassword";
 
-function ProtectedStudentRoute({
-  children,
-}) {
-  const token =
-    localStorage.getItem(
-      "studentToken"
-    );
-
-  if (!token) {
-    return (
-      <Navigate to="/student-login" />
-    );
-  }
-
-  return children;
-}
-
-export default ProtectedStudentRoute;
 function App() {
   return (
     <Routes>
@@ -59,15 +43,27 @@ function App() {
       />
       <Route
         path="/courses"
-        element={<Courses />}
+        element={
+          <ProtectedRoute>
+            <Courses />
+          </ProtectedRoute>
+        }
       />
       <Route
         path="/attendance"
-        element={<Attendance />}
+        element={
+          <ProtectedRoute>
+            <Attendance />
+          </ProtectedRoute>
+        }
       />
       <Route
         path="/results"
-        element={<Results />}
+        element={
+          <ProtectedRoute>
+            <Results />
+          </ProtectedRoute>
+        }
       />
       <Route
         path="/register"
@@ -91,37 +87,60 @@ function App() {
       />
       <Route
         path="/my-attendance"
-        element={<MyAttendance />}
-      />
-      <Route
-        path="/my-attendance"
-        element={<MyAttendance />}
+        element={
+          <ProtectedStudentRoute>
+            <MyAttendance />
+          </ProtectedStudentRoute>
+        }
       />
       <Route
         path="/my-results"
-        element={<MyResults />}
+        element={
+          <ProtectedStudentRoute>
+            <MyResults />
+          </ProtectedStudentRoute>
+        }
       />
       <Route
         path="/my-profile"
-        element={<MyProfile />}
+        element={
+          <ProtectedStudentRoute>
+            <MyProfile />
+          </ProtectedStudentRoute>
+        }
       />
       <Route
         path="/student-change-password"
-        element={<StudentChangePassword />}
+        element={
+          <ProtectedStudentRoute>
+            <StudentChangePassword />
+          </ProtectedStudentRoute>
+        }
       />
       <Route
         path="/analytics"
-        element={<StudentAnalytics />}
+        element={
+          <ProtectedStudentRoute>
+            <StudentAnalytics />
+          </ProtectedStudentRoute>
+        }
       />
       <Route
         path="/edit-profile"
-        element={<EditProfile />}
+        element={
+          <ProtectedStudentRoute>
+            <EditProfile />
+          </ProtectedStudentRoute>
+        }
       />
       <Route
         path="/student-report"
-        element={<StudentReport />}
+        element={
+          <ProtectedStudentRoute>
+            <StudentReport />
+          </ProtectedStudentRoute>
+        }
       />
-      
     </Routes>
   );
 }

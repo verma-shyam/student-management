@@ -39,12 +39,43 @@ app.use("/api/attendance",
 app.use("/api/results",
   require("./routes/resultRoutes")
 );
+app.use("/api/notifications",
+  require("./routes/notificationRoutes")
+);
+app.use("/api/reviews",
+  require("./routes/reviewRoutes")
+);
 app.use("/api/student-auth",
   studentAuthRoutes
 );
 app.use("/uploads",
   express.static("uploads")
 );
+
+const ensureDbTables = async () => {
+  try {
+    await pool.query(`CREATE TABLE IF NOT EXISTS admin_notifications (
+      id SERIAL PRIMARY KEY,
+      message TEXT NOT NULL,
+      student_id INT REFERENCES students(id) ON DELETE SET NULL,
+      is_read BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS admin_reviews (
+      id SERIAL PRIMARY KEY,
+      student_id INT REFERENCES students(id) ON DELETE CASCADE,
+      rating INT NOT NULL,
+      review TEXT NOT NULL,
+      feedback TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    console.log("✅ Ensured admin_notifications and admin_reviews tables exist");
+  } catch (error) {
+    console.error("❌ Failed to ensure DB tables:", error);
+  }
+};
 
 app.get("/api/admins", async (req, res) => {
   try {
@@ -64,6 +95,10 @@ app.get("/api/admins", async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+ensureDbTables().then(() => {
+  app.listen(PORT, () => {
+    console.log('Server running on port ' + PORT);
+  });
+}).catch((error) => {
+  console.error('❌ Failed to initialize database tables, server not started:', error);
 });
